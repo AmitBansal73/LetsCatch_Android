@@ -1,0 +1,51 @@
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context="net.anvisys.letscatch.MapFragment">
+
+    <FrameLayout
+        android:id="@+id/map_fragment"
+        android:layout_width="match_parent"
+        android:layout_height="fill_parent"
+       ></FrameLayout>
+
+    <LinearLayout
+        android:id="@+id/myReply"
+        android:layout_width="match_parent"
+        android:layout_height="60dp"
+        android:orientation="horizontal"
+        android:layout_alignParentBottom="true"
+        android:background="#ffffff"
+        android:visibility="gone"
+        >
+
+        <EditText
+            android:id="@+id/myMessage"
+            android:layout_width="0dp"
+            android:layout_weight="5"
+            android:layout_height="wrap_content"
+            android:gravity="left|top"
+            android:inputType="textMultiLine"
+            android:layout_marginLeft="30dp"
+            android:layout_marginTop="2dp"
+            android:hint="Add New Post"
+            android:theme="@style/Theme.AppCompat.Light"
+            android:textSize="15sp"
+            android:focusableInTouchMode="true"
+            />
+
+        <ImageView
+            android:id="@+id/sendImage"
+            android:layout_width="0dp"
+            android:layout_weight="1"
+            android:layout_height="30dp"
+            android:layout_gravity="top"
+            android:layout_marginTop="10dp"
+            android:src="@drawable/send"
+
+            />
+    </LinearLayout>
+
+</FrameLayout>

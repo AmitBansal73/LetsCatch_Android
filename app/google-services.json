@@ -1,0 +1,41 @@
+{
+  "project_info": {
+    "project_number": "874763919703",
+    "firebase_url": "https://letsmeet-158910.firebaseio.com",
+    "project_id": "letsmeet-158910",
+    "storage_bucket": "letsmeet-158910.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:874763919703:android:a82e29acba9fa21a",
+        "android_client_info": {
+          "package_name": "net.anvisys.letsmeet"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "874763919703-8kik4j2fvhahhcn4gtkj95ohfl742rba.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [        {
+          "current_key": "AIzaSyChVGBwkOYROzpcA4-Bma1_NBdB2SOB4gU"
+        }
+      ],
+      "services": {
+        "analytics_service": {
+          "status": 1
+        },
+        "appinvite_service": {
+          "status": 1,
+          "other_platform_oauth_client": []
+        },
+        "ads_service": {
+          "status": 2
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

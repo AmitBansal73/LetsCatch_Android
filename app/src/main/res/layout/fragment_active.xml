@@ -1,0 +1,29 @@
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context="net.anvisys.letscatch.ActiveFragment">
+    <TextView
+        android:id="@+id/noDataView"
+        android:layout_width="match_parent"
+        android:layout_height="fill_parent"
+        android:text=""
+        android:gravity="center"
+        android:visibility="gone"
+        />
+    <ListView
+        android:id="@+id/activeList"
+        android:layout_width="match_parent"
+        android:layout_height="fill_parent"
+        android:background="#ffffff"
+        android:scrollingCache="false"
+        android:paddingLeft="@dimen/activity_horizontal_margin"
+        android:paddingRight="@dimen/activity_horizontal_margin"
+        android:layout_alignParentLeft="true"
+        android:footerDividersEnabled="true"
+        android:headerDividersEnabled="true"
+        android:visibility="gone"
+        >
+    </ListView>
+
+</FrameLayout>

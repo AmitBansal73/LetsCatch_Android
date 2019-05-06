@@ -1,0 +1,17 @@
+<resources>
+    <string name="app_name">LetsCatch</string>
+
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
+    <string name="drawer_Open">Open</string>
+    <string name="drawer_Close">Close</string>
+    <string name="prompt_email">email</string>
+    <string name="action_settings">Settings</string>
+    <string name="prompt_Mobile">Mobile Number</string>
+    prompt_Mobile
+
+    <string-array name="viewType">
+        <item>Daily</item>
+        <item>Monthly</item>
+    </string-array>
+</resources>

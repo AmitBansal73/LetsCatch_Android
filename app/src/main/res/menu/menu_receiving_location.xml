@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    tools:context="net.anvisys.meetus.ContactActivity">
+
+    <item android:id="@+id/action_Image"
+        android:title="Send Image"
+        android:icon="@drawable/ic_action_image"
+        android:orderInCategory="100"
+        app:showAsAction="always"
+        />
+    <item android:id="@+id/action_Stop"
+        android:title="Stop"
+        android:icon="@drawable/ic_action_discard"
+        android:orderInCategory="100"
+        app:showAsAction="always"
+        />
+    <item android:id="@+id/action_Pause"
+        android:title="Invite"
+        android:icon="@drawable/ic_action_pause"
+        android:orderInCategory="100"
+        app:showAsAction="always"
+        />
+    <item android:id="@+id/action_Share"
+        android:title="Invite"
+        android:icon="@drawable/ic_action_location"
+        android:orderInCategory="100"
+        app:showAsAction="always"
+        />
+</menu>

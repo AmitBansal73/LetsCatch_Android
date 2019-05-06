@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    tools:context="net.anvisys.meetus.ContactActivity">
+
+    <item android:id="@+id/action_New"
+        android:title="New Contact"
+        android:icon="@drawable/ic_action_new_event"
+        android:orderInCategory="100"
+        app:showAsAction="always"
+        />
+
+    <item android:id="@+id/Sync_Contact"
+        android:title="Sync Contact"
+        android:icon="@drawable/ic_action_shuffle"
+        android:orderInCategory="100"
+        app:showAsAction="never"
+        />
+    <item android:id="@+id/Clear_Contact"
+        android:title="Clear All Contact"
+        android:icon="@drawable/ic_action_discard"
+        android:orderInCategory="100"
+        app:showAsAction="never"
+        />
+
+</menu>
