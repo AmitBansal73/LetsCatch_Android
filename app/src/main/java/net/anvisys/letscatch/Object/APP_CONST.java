@@ -8,7 +8,7 @@ public class APP_CONST {
     public static final String DIRECTION_URL = "https://maps.googleapis.com/maps/api/directions/";
     public static final String GOOGLE_API_KEY = "AIzaSyChVGBwkOYROzpcA4-Bma1_NBdB2SOB4gU";
     public static final String GOOGLE_PROJ_ID = "874763919703";
-    public static final String APP_SERVER_URL = "http://www.kevintech.in/CatchUp-WebApi";
+    public static final String APP_SERVER_URL = "http://www.kevintech.in/CatchupWebApi";
 
 
     public static final int MEETING_TYPE_INSTANT = 1;

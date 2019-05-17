@@ -218,7 +218,5 @@ public class MobileNoActivity extends AppCompatActivity {
             btnNext.setEnabled(true);
         }
 
-
-
     }
 }
