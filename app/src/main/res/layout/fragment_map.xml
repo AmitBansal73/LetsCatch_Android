@@ -17,7 +17,7 @@
         android:layout_height="60dp"
         android:orientation="horizontal"
         android:layout_alignParentBottom="true"
-        android:background="#ffffff"
+        android:background="#252525"
         android:visibility="gone"
         >
 
@@ -30,10 +30,11 @@
             android:inputType="textMultiLine"
             android:layout_marginLeft="30dp"
             android:layout_marginTop="2dp"
-            android:hint="Add New Post"
-            android:theme="@style/Theme.AppCompat.Light"
-            android:textSize="15sp"
+            android:hint="Write Message"
+            android:theme="@style/ThemeOverlay.AppCompat.Dark"
+            android:textSize="18sp"
             android:focusableInTouchMode="true"
+            android:textColor="#ffffff"
             />
 
         <ImageView

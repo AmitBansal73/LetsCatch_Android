@@ -191,7 +191,7 @@ public class SyncContact {
 
                                 da.close();
                                 Session.SetLocalContactSyncLocalMilliSecond(mContext);
-                                GetImage(tempContact.ID);
+                              //  GetImage(tempContact.ID);
                             }
                         }
                     }

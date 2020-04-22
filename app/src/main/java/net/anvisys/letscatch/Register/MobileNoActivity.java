@@ -60,7 +60,7 @@ public class MobileNoActivity extends AppCompatActivity {
         ccImage = (ImageView)findViewById(R.id.ccImage);
 
         MobileNo = (AutoCompleteTextView)findViewById(R.id.mobile);
-        btnNext = (Button)findViewById(R.id.btnAction);
+        btnNext = (Button)findViewById(R.id.btnNext);
 
 
         ccImage.setOnClickListener(new View.OnClickListener() {
@@ -79,7 +79,7 @@ public class MobileNoActivity extends AppCompatActivity {
         CountryListAdapter cAdapter = new CountryListAdapter(this);
         cAdapter.notifyDataSetChanged();
         CountryListView.setAdapter(cAdapter);
-       Country count=  (Country)CountryListView.getItemAtPosition(0);
+        Country count=  (Country)CountryListView.getItemAtPosition(0);
         ccSpinner.setText(count.Code);
 
         ccSpinner.setOnClickListener(new View.OnClickListener() {
@@ -107,28 +107,42 @@ public class MobileNoActivity extends AppCompatActivity {
                 }
             }
         });
+
+        btnNext.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                CheckMobile(v);
+            }
+        });
+
     }
 
-    public void btnClick(View view)
+    public void CheckMobile(View view)
     {
-        String CCCode = ccSpinner.getText().toString();
-        String Mobile = CCCode + MobileNo.getText().toString();
+        try {
+            String CCCode = ccSpinner.getText().toString();
+            String Mobile = CCCode + MobileNo.getText().toString();
 
-        Mobile=Mobile.replaceAll("\\s+","");
+            Mobile = Mobile.replaceAll("\\s+", "");
 
-        String regexStr = "^[+]?[0-9]{8,15}$";
-        if (Mobile.matches(regexStr)) {
+            String regexStr = "^[+]?[0-9]{8,15}$";
 
-            if (Mobile.startsWith("+")) {
-                Mobile = Mobile.substring(1, Mobile.length());
+            if (Mobile.matches(regexStr)) {
+
+                if (Mobile.startsWith("+")) {
+                    Mobile = Mobile.substring(1, Mobile.length() - 1);
+                }
+            } else {
+
+                Toast.makeText(getApplicationContext(), "Enter only numbers", Toast.LENGTH_LONG).show();
             }
-        }
-        else
-        {
-            Toast.makeText(getApplicationContext(), "Enter only numbers",Toast.LENGTH_LONG).show();
-        }
 
-        GetUser(Mobile);
+            GetUser(Mobile);
+        }
+        catch (Exception ex)
+        {
+            Toast.makeText(getApplicationContext(), "Enter reading text", Toast.LENGTH_LONG).show();
+        }
     }
 
     private void GetUser(final String MobileNumber)
@@ -154,14 +168,16 @@ public class MobileNoActivity extends AppCompatActivity {
                         if(jObj.getString("Name") == "null")
                         {
                             Intent loginIntent = new Intent(MobileNoActivity.this, RegisterActivity.class);
-                            loginIntent.putExtra("Mobile","+"+MobileNumber);
+                            loginIntent.putExtra("Mobile","+" +MobileNumber);
                             startActivity(loginIntent);
+
                         }
                         else {
                             Intent loginIntent = new Intent(MobileNoActivity.this, LoginActivity.class);
+                            loginIntent.putExtra("USERID",jObj.getInt("ID"));
                             loginIntent.putExtra("Mobile",jObj.getString("MobileNumber"));
                             loginIntent.putExtra("Name",jObj.getString("Name"));
-                            loginIntent.putExtra("Image",jObj.getString("Image"));
+                            //loginIntent.putExtra("Image",jObj.getString("Image"));
                             loginIntent.putExtra("Password",jObj.getString("Password"));
                             loginIntent.putExtra("GCMCode",jObj.getString("GCMCode"));
                             loginIntent.putExtra("Location",jObj.getString("Location"));
@@ -174,6 +190,7 @@ public class MobileNoActivity extends AppCompatActivity {
                     {
                         prgBar.setVisibility(View.GONE);
                         btnNext.setEnabled(true);
+                        Toast.makeText(getApplicationContext(), "Error Reading Data : ",Toast.LENGTH_LONG).show();
                     }
 
                 }

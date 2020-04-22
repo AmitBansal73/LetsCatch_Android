@@ -51,7 +51,7 @@ public  class ActiveMeetingGroup  {
                 tempMeeting.MEETING_STATUS = APP_CONST.MEETING_STATUS_SHARING_LOCATION;
             }
              else {
-               tempMeeting = new ActiveMeeting(APP_CONST.MEETING_TYPE_INSTANT, "I Am", APP_VARIABLES.MY_MOBILE_NUMBER, APP_VARIABLES.MY_LOCATION_STRING, cont.MobileNumber, cont.userName, cont.LatLong, UTILITY.CurrentLocalDateTimeString());
+               tempMeeting = new ActiveMeeting(APP_CONST.MEETING_TYPE_INSTANT, "I Am", APP_VARIABLES.MY_MOBILE_NUMBER, APP_VARIABLES.MY_LOCATION_STRING, cont.MobileNumber,cont.ID ,cont.userName, cont.LatLong, UTILITY.CurrentLocalDateTimeString());
                 tempMeeting.MEETING_STATUS = APP_CONST.MEETING_STATUS_SENDING_LOCATION;
                 ImageServer.SaveBitmapImage(ImageServer.getBitmapFromString(cont.strImage, mContext), cont.MobileNumber, mContext);
                 ActiveMeetingGroup.GetInstance(context).RunningMeetings.put(cont.MobileNumber, tempMeeting);
@@ -88,9 +88,9 @@ public  class ActiveMeetingGroup  {
                     Name = cont.userName;
                     ImageServer.SaveBitmapImage(ImageServer.getBitmapFromString(cont.strImage,mContext), MobileNumber, mContext);
                 }
-                tempMeeting = new ActiveMeeting(APP_CONST.MEETING_TYPE_INSTANT,"I Am", APP_VARIABLES.MY_MOBILE_NUMBER , APP_VARIABLES.MY_LOCATION_STRING,MobileNumber,Name, Location,UTILITY.CurrentLocalDateTimeString());
+                //tempMeeting = new ActiveMeeting(APP_CONST.MEETING_TYPE_INSTANT,"I Am", APP_VARIABLES.MY_MOBILE_NUMBER , APP_VARIABLES.MY_LOCATION_STRING,MobileNumber,Name, Location,UTILITY.CurrentLocalDateTimeString());
                 //tempMeeting.MEETING_STATUS = APP_CONST.MEETING_STATUS_TRACKING;
-                RunningMeetings.put(MobileNumber, tempMeeting);
+               // RunningMeetings.put(MobileNumber, tempMeeting);
              }
             else
             {
@@ -114,8 +114,8 @@ public  class ActiveMeetingGroup  {
             }
             else
             {
-                tempMeeting = new ActiveMeeting(APP_CONST.MEETING_TYPE_INSTANT,"I Am", APP_VARIABLES.MY_MOBILE_NUMBER , APP_VARIABLES.MY_LOCATION_STRING,MobileNumber,"", "",UTILITY.CurrentLocalDateTimeString());
-                RunningMeetings.put(MobileNumber,tempMeeting);
+                //tempMeeting = new ActiveMeeting(APP_CONST.MEETING_TYPE_INSTANT,"I Am", APP_VARIABLES.MY_MOBILE_NUMBER , APP_VARIABLES.MY_LOCATION_STRING,MobileNumber,"", "",UTILITY.CurrentLocalDateTimeString());
+               // RunningMeetings.put(MobileNumber,tempMeeting);
             }
             //tempMeeting.sendNotification(mContext, MobileNumber, Message.INVITE_REJECTED);
         }

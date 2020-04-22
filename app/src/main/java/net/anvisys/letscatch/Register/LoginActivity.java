@@ -26,6 +26,7 @@ import com.android.volley.toolbox.JsonObjectRequest;
 import com.android.volley.toolbox.Volley;
 import com.google.android.gms.gcm.GoogleCloudMessaging;
 import com.google.android.gms.iid.InstanceID;
+import com.squareup.picasso.Picasso;
 
 import net.anvisys.letscatch.Common.ImageServer;
 import net.anvisys.letscatch.Common.Session;
@@ -92,6 +93,7 @@ public class LoginActivity extends AppCompatActivity {
         btnLogin = (Button)findViewById(R.id.btnLogin);
 
         Intent mIntent = getIntent();
+        int UserID = mIntent.getIntExtra("USERID",0);
         Mobile = mIntent.getStringExtra("Mobile");
         MobileNo.setText(Mobile);
         Name = mIntent.getStringExtra("Name");
@@ -102,16 +104,23 @@ public class LoginActivity extends AppCompatActivity {
         Location.setText(mIntent.getStringExtra("Location"));
         RegID = mIntent.getStringExtra("GCMCode");
 
-        strImage = mIntent.getStringExtra("Image");
+        if(UserID != 0)
+        {
+            String url1 = APP_CONST.IMAGE_URL + UserID + ".png";
+            Picasso.with(getApplicationContext()).load(url1).error(R.drawable.user_image).into(profileImage);
+        }
+
+       /* strImage = mIntent.getStringExtra("Image");
         if (!strImage.matches("")&& strImage != null) {
-            ImageServer.SaveImageString(strImage,Mobile,this);
-            profileImage.setImageBitmap(ImageServer.GetImageBitmap(Mobile,this));
+            //ImageServer.SaveImageString(strImage,Mobile,this);
+           // profileImage.setImageBitmap(ImageServer.GetImageBitmap(Mobile,this));
         }
         else
         {
-            Bitmap bitmap =  ImageServer.GetDefaultImage(this);
-            profileImage.setImageBitmap(bitmap);
+           // Bitmap bitmap =  ImageServer.GetDefaultImage(this);
+           // profileImage.setImageBitmap(bitmap);
         }
+        */
         txtForgotPassword.setText("Forgot Password?");
 
 
@@ -183,6 +192,7 @@ public class LoginActivity extends AppCompatActivity {
                         } else {
                             Intent loginIntent = new Intent(LoginActivity.this, StartActivity.class);
                             Profile myProfile = new Profile();
+                            myProfile.UserID = jObj.getInt("ID");
                             myProfile.NAME = jObj.getString("Name");
                             myProfile.strImage = jObj.getString("Image");
                             myProfile.MOB_NUMBER = Mobile;

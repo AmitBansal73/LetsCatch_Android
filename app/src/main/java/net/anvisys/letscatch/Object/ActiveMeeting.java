@@ -62,11 +62,13 @@ public class ActiveMeeting implements Parcelable {
 
     }
 
-    public ActiveMeeting(int meet_type ,String ORIGIN_NAME, String ORIGIN_MOBILE_NO,String ORIGIN_LATLONG, String DESTINATION_MOBILE_NO, String DESTINATION_NAME,String DESTINATION_LATLONG ,String Start_Time) {
+    public ActiveMeeting(int meet_type ,String ORIGIN_NAME, String ORIGIN_MOBILE_NO,String ORIGIN_LATLONG, String DESTINATION_MOBILE_NO,
+                          int DESTINATION_USER_ID,String DESTINATION_NAME,String DESTINATION_LATLONG ,String Start_Time) {
         this.TYPE = meet_type;
         this.ORIGIN_NAME = ORIGIN_NAME;
         this.ORIGIN_MOBILE_NO = ORIGIN_MOBILE_NO;
         this.ORIGIN_LATLONG = ORIGIN_LATLONG;
+        this.DESTINATION_USER_ID = DESTINATION_USER_ID;
         this.DESTINATION_MOBILE_NO = DESTINATION_MOBILE_NO;
         this.DESTINATION_NAME = DESTINATION_NAME;
         this.DESTINATION_LATLONG = DESTINATION_LATLONG;
@@ -80,20 +82,22 @@ public class ActiveMeeting implements Parcelable {
         this.ORIGIN_NAME = arrData[1];
         this.ORIGIN_MOBILE_NO = arrData[2];
         this.ORIGIN_LATLONG = arrData[3];
-        this.DESTINATION_MOBILE_NO = arrData[4];
-        this.DESTINATION_NAME = arrData[5];
-        this.DESTINATION_LATLONG = arrData[6];
-        this.START_TIME = arrData[7];
-        this.ScheduleID = Integer.parseInt(arrData[8]);
-        this.MEETING_STATUS = arrData[9];
+        this.DESTINATION_USER_ID = Integer.parseInt(arrData[4]);
+        this.DESTINATION_MOBILE_NO = arrData[5];
+        this.DESTINATION_NAME = arrData[6];
+        this.DESTINATION_LATLONG = arrData[7];
+        this.START_TIME = arrData[8];
+        this.ScheduleID = Integer.parseInt(arrData[9]);
+        this.MEETING_STATUS = arrData[10];
     }
 
-    public ActiveMeeting(String DESTINATION_MOBILE_NO, String DESTINATION_NAME,String STATUS,String DESTINATION_LATLONG ,String Start_time) {
+    public ActiveMeeting(String DESTINATION_MOBILE_NO, int DESTINATION_USER_ID, String DESTINATION_NAME,String STATUS,String DESTINATION_LATLONG ,String Start_time) {
         this.TYPE = APP_CONST.MEETING_TYPE_INSTANT;
         this.ORIGIN_NAME = APP_VARIABLES.MY_NAME;
         this.ORIGIN_MOBILE_NO = APP_VARIABLES.MY_MOBILE_NUMBER;
         this.MEETING_STATUS = STATUS;
         this.ORIGIN_LATLONG = APP_VARIABLES.MY_LOCATION_STRING;
+        this.DESTINATION_USER_ID = DESTINATION_USER_ID;
         this.DESTINATION_MOBILE_NO = DESTINATION_MOBILE_NO;
         this.DESTINATION_NAME = DESTINATION_NAME;
         this.DESTINATION_LATLONG = DESTINATION_LATLONG;
@@ -102,7 +106,8 @@ public class ActiveMeeting implements Parcelable {
 
     public String GetSessionString()
     {
-        String sessionString = this.TYPE+"&" + this.ORIGIN_NAME + "&" + this.ORIGIN_MOBILE_NO+ "&" + this.ORIGIN_LATLONG+ "&"+this.DESTINATION_MOBILE_NO+ "&"+this.DESTINATION_NAME+ "&"+this.DESTINATION_LATLONG
+        String sessionString = this.TYPE+"&" + this.ORIGIN_NAME + "&" + this.ORIGIN_MOBILE_NO+ "&" + this.ORIGIN_LATLONG + "&" + this.DESTINATION_USER_ID
+                + "&"+this.DESTINATION_MOBILE_NO+ "&"+this.DESTINATION_NAME+ "&"+this.DESTINATION_LATLONG
                 + "&"+this.START_TIME+  "&"+this.ScheduleID + "&"+this.MEETING_STATUS ;
 
         return sessionString;
@@ -124,6 +129,7 @@ public class ActiveMeeting implements Parcelable {
         parcel.writeString(UPDATE_TIME);
         parcel.writeString(DIST_To_GO);
         parcel.writeString(TIME_TO_GO);
+        parcel.writeInt(DESTINATION_USER_ID);
         parcel.writeString(DESTINATION_MOBILE_NO);
         parcel.writeString(DESTINATION_LATLONG);
         parcel.writeBooleanArray(bArray);
@@ -137,6 +143,7 @@ public class ActiveMeeting implements Parcelable {
         this.UPDATE_TIME = in.readString();
         this.DIST_To_GO = in.readString();
         this.TIME_TO_GO = in.readString();
+        this.DESTINATION_USER_ID = in.readInt();
         this.DESTINATION_MOBILE_NO = in.readString();
         this.DESTINATION_LATLONG = in.readString();
         in.readBooleanArray(bArray);
@@ -202,10 +209,11 @@ public class ActiveMeeting implements Parcelable {
 
     protected String MEETING_NAME;
 
+    public int ORIGIN_USER_ID =0;
     public String ORIGIN_MOBILE_NO;
     public String ORIGIN_NAME;
 
-
+    public int DESTINATION_USER_ID =0;
     public String DESTINATION_MOBILE_NO;
     public String DESTINATION_NAME;
 
@@ -482,6 +490,7 @@ public class ActiveMeeting implements Parcelable {
             }
             da.close();
             sendNotification(context, DESTINATION_MOBILE_NO, Message.STOP_TRACKING);
+
         }
         catch (Exception ex)
         {
@@ -499,9 +508,10 @@ public class ActiveMeeting implements Parcelable {
         }
 
         int RequestID=1;
-        String reqBody = "{\"hostMobile\":\"" + ORIGIN_MOBILE_NO + "\",\"hostName\":\"" + APP_VARIABLES.MY_NAME + "\",\"trackerID\":" + RequestID + ",\"Type\":\"" + msg + "\",\"hostLocation\":\"" + text + "\",\"inviteeMobile\":\"" + DESTINATION_MOBILE_NO + "\",\"inviteeLocation\":\"" + text + "\"}";
+        String reqBody = "{\"hostMobile\":\"" + ORIGIN_MOBILE_NO + "\",\"hostName\":\"" + APP_VARIABLES.MY_NAME + "\",\"trackerID\":" + RequestID + "\",\"hostUserId\":" + APP_VARIABLES.MY_USER_ID +
+                ",\"Type\":\"" + msg + "\",\"hostLocation\":\"" + text + "\",\"inviteeMobile\":\"" + DESTINATION_MOBILE_NO + "\",\"inviteeLocation\":\"" + text + "\"}";
 
-        String url = APP_CONST.APP_SERVER_URL + "api/Tracker";
+        String url = APP_CONST.APP_SERVER_URL + "/api/Tracker";
 
         try {
             JSONObject jsRequest = new JSONObject(reqBody);

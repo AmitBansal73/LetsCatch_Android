@@ -24,12 +24,15 @@ import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
 
 /**
  * Created by Amit Bansal on 16-01-2017.
  */
 public class ImageServer {
 
+    private static String AppName = "Catch";
     private static String directoryName = "images";
     private Context mContext;
 
@@ -100,7 +103,7 @@ public class ImageServer {
         {
             if(isExternalStorageWritable()) {
                 File root = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES);
-                File myDir = new File(root + "/LetsMeet");
+                File myDir = new File(root + "/" + AppName);
                 myDir.mkdirs();
                 //File directory = mContext.getDir(directoryName, Context.MODE_PRIVATE);
                 //File directory = getAlbumStorageDir("LetsMeet");
@@ -244,7 +247,7 @@ public class ImageServer {
         try {
             if(isExternalStorageWritable()) {
                 File root = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES);
-                File myDir = new File(root + "/LetsMeet");
+                File myDir = new File(root + "/" + AppName);
                 myDir.mkdirs();
                 // File directory = context.getDir(directoryName, Context.MODE_PRIVATE);
                 //File directory = getAlbumStorageDir("LetsMeet");
@@ -265,7 +268,7 @@ public class ImageServer {
     }
 
 
-    public static Bitmap GetImageBitmap(String MobileNumber, Context context)
+    public static Bitmap GetImageBitmap1(String MobileNumber, Context context)
     {
         Bitmap thumbnail = null;
         try {
@@ -336,6 +339,54 @@ int a =1;
             return bitmap;
         } catch (Exception ex) {
             return null;
+        }
+    }
+
+    public static byte[] getBytes(InputStream inputStream) throws IOException {
+        ByteArrayOutputStream byteBuffer = new ByteArrayOutputStream();
+        int bufferSize = 1024;
+        byte[] buffer = new byte[bufferSize];
+
+        int len = 0;
+        while ((len = inputStream.read(buffer)) != -1) {
+            byteBuffer.write(buffer, 0, len);
+        }
+        return byteBuffer.toByteArray();
+    }
+
+    public static boolean SaveFileToExternal(byte[] b, String FileName, Context mContext)
+    {
+        try
+        {
+            if(isExternalStorageWritable()) {
+                File root = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES);
+                File myDir = new File(root + "/"+ AppName);
+                myDir.mkdirs();
+                //File directory = mContext.getDir(directoryName, Context.MODE_PRIVATE);
+                //File directory = getAlbumStorageDir("LetsMeet");
+                File file = new File(myDir, FileName);
+                // file.createNewFile();
+
+                FileOutputStream fos = new FileOutputStream(file);
+                fos.write(b,0,b.length);
+                fos.flush();
+                fos.close();
+
+                MediaScannerConnection.scanFile(mContext,
+                        new String[]{file.toString()}, null,
+                        new MediaScannerConnection.OnScanCompletedListener() {
+                            public void onScanCompleted(String path, Uri uri) {
+
+                            }
+                        });
+                return true;
+            }
+            else
+            {return false;}
+        }
+        catch (Exception ex)
+        {
+            return false;
         }
     }
 }

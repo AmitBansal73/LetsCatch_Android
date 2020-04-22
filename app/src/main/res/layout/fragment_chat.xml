@@ -3,7 +3,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
-    tools:context="net.anvisys.tabsuisample.ChatFragment">
+    tools:context="net.anvisys.letscatch.ChatFragment">
 
     <!-- TODO: Update blank fragment layout -->
 
@@ -48,10 +48,11 @@
                     android:layout_height="20dp"
                     android:layout_weight="1"
                     android:layout_toRightOf="@id/markerImage"
-                    android:layout_marginLeft="2dp"
+                    android:layout_marginLeft="5dp"
                     android:layout_marginTop="1dp"
-                    android:textSize="15sp"
+                    android:textSize="18sp"
                     android:textStyle="bold"
+                    android:textColor="@color/black"
                     />
                 <TextView
                     android:id="@+id/userStatus"
@@ -60,7 +61,8 @@
                     android:layout_weight="1"
                     android:layout_toRightOf="@id/userName"
                     android:layout_marginTop="1dp"
-                    android:textSize="15sp"
+                    android:textSize="18sp"
+                    android:textColor="@color/black"
                     />
             </LinearLayout>
             <LinearLayout
@@ -74,7 +76,9 @@
                     android:layout_height="20dp"
                     android:layout_weight="1"
                     android:layout_marginTop="3dp"
-                    android:textSize="12sp"
+                    android:layout_marginLeft="5dp"
+                    android:textSize="16sp"
+                    android:textColor="@color/black"
                     />
 
                 <TextView
@@ -83,13 +87,15 @@
                     android:layout_height="20dp"
                     android:layout_weight="1"
                     android:layout_marginTop="3dp"
-                    android:textSize="12sp"
+                    android:textSize="16sp"
+                    android:textColor="@color/black"
                     />
             </LinearLayout>
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:orientation="horizontal"
+                android:layout_marginBottom="10dp"
                 >
                 <TextView
                     android:id="@+id/startTime"
@@ -97,7 +103,9 @@
                     android:layout_height="20dp"
                     android:layout_weight="1"
                     android:layout_marginTop="3dp"
-                    android:textSize="12sp"
+                    android:layout_marginLeft="5dp"
+                    android:textSize="16sp"
+                    android:textColor="@color/black"
                     />
 
                 <TextView
@@ -106,7 +114,8 @@
                     android:layout_weight="1"
                     android:layout_height="20dp"
                     android:layout_marginTop="3dp"
-                    android:textSize="12sp"
+                    android:textSize="16sp"
+                    android:textColor="@color/black"
                     />
             </LinearLayout>
 
@@ -150,7 +159,7 @@
         android:layout_height="60dp"
         android:orientation="horizontal"
         android:layout_alignParentBottom="true"
-        android:background="@drawable/box_border"
+        android:background="#252525"
         >
 
         <EditText
@@ -162,8 +171,8 @@
             android:inputType="textMultiLine"
             android:layout_marginLeft="30dp"
             android:layout_marginTop="2dp"
-            android:hint="Add New Post"
-            android:theme="@style/Theme.AppCompat.Light"
+            android:hint="Write Message"
+            android:theme="@style/ThemeOverlay.AppCompat.Light"
             android:textSize="15sp"
             android:focusableInTouchMode="true"
             />

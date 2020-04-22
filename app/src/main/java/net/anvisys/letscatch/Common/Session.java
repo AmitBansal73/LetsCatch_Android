@@ -69,6 +69,8 @@ public class Session {
         try {
             SharedPreferences prefs = context.getSharedPreferences(APP_CONST.SESSION_NAME, Context.MODE_PRIVATE);
             SharedPreferences.Editor editor = prefs.edit();
+
+            editor.putInt("UserID", myProfile.UserID);
             editor.putString("regID", myProfile.REG_ID);
             editor.putString("MobileNo",myProfile.MOB_NUMBER);
             editor.putString("Location",myProfile.LOCATION);
@@ -90,6 +92,7 @@ public class Session {
         Profile mProfile = new Profile();
         try {
             SharedPreferences prefs = context.getSharedPreferences(APP_CONST.SESSION_NAME, Context.MODE_PRIVATE);
+            mProfile.UserID =  prefs.getInt("UserID",0);
             mProfile.MOB_NUMBER =  prefs.getString("MobileNo","9999999999");
             mProfile.NAME =  prefs.getString("Name","User Name");
             mProfile.E_MAIL =  prefs.getString("Email","user@xyz.com");

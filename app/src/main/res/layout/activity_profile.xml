@@ -87,6 +87,7 @@
                 android:maxLines="1"
                 android:singleLine="true"
                 android:textColor="@color/black"
+                android:drawableLeft="@drawable/ic_local_phone_24dp"
                 android:textAppearance="@style/Base.TextAppearance.AppCompat.Medium"
                 />
 
@@ -99,7 +100,7 @@
                 android:maxLines="1"
                 android:singleLine="true"
                 android:textColor="@color/black"
-                android:editable="false"
+                android:drawableLeft="@drawable/ic_account_24dp"
                 android:textAppearance="@style/Base.TextAppearance.AppCompat.Medium"
                 android:layout_marginTop="10dp"
                 />
@@ -112,9 +113,9 @@
                 android:maxLines="1"
                 android:singleLine="true"
                 android:textColor="@color/black"
-                android:editable="false"
                 android:textAppearance="@style/Base.TextAppearance.AppCompat.Medium"
                 android:layout_marginTop="10dp"
+                android:drawableLeft="@drawable/ic_email_24dp"
                 />
 
             <TextView
@@ -128,6 +129,7 @@
                 android:textColor="@color/black"
                 android:textAppearance="@style/Base.TextAppearance.AppCompat.Medium"
                 android:layout_marginTop="10dp"
+                android:drawableLeft="@drawable/ic_location_on_black_24dp"
                 />
         </LinearLayout>
         <LinearLayout
@@ -153,6 +155,7 @@
                     android:singleLine="true"
                     android:textColor="@color/black"
                     android:textAppearance="@style/Base.TextAppearance.AppCompat.Medium"
+                    android:drawableLeft="@drawable/ic_person_24dp"
                     />
 
             </android.support.design.widget.TextInputLayout>
@@ -166,7 +169,7 @@
                 android:inputType="textEmailAddress"
                 android:maxLines="1"
                 android:singleLine="true"
-                android:editable="false"
+                android:drawableLeft="@drawable/ic_email_24dp"
                 />
 
             <EditText
@@ -177,6 +180,7 @@
                 android:inputType="textAutoComplete"
                 android:maxLines="1"
                 android:singleLine="true"
+                android:drawableLeft="@drawable/ic_location_on_black_24dp"
                 />
             <TextView
                 android:id="@+id/txtProfileMessage"
@@ -213,7 +217,7 @@
                 android:inputType="textWebPassword"
                 android:maxLines="1"
                 android:singleLine="true"
-                android:editable="false"
+                android:drawableLeft="@drawable/ic_lock_24dp"
                 />
             <EditText
                 android:id="@+id/newPassword"
@@ -223,7 +227,7 @@
                 android:inputType="textWebPassword"
                 android:maxLines="1"
                 android:singleLine="true"
-                android:editable="false"
+                android:drawableLeft="@drawable/ic_action_accounts"
                 />
             <EditText
                 android:id="@+id/cnfPassword"
@@ -233,7 +237,7 @@
                 android:inputType="textWebPassword"
                 android:maxLines="1"
                 android:singleLine="true"
-                android:editable="false"
+                android:drawableLeft="@drawable/ic_action_accounts"
                 />
             <TextView
                 android:id="@+id/txtPasswordMessage"

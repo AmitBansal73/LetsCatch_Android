@@ -6,7 +6,7 @@
 
     <item android:id="@+id/action_Image"
         android:title="Send Image"
-        android:icon="@drawable/ic_action_image"
+        android:icon="@drawable/ic_action_attachment"
         android:orderInCategory="100"
         app:showAsAction="always"
         />
@@ -24,7 +24,7 @@
         />
     <item android:id="@+id/action_Share"
         android:title="Invite"
-        android:icon="@drawable/ic_action_location"
+        android:icon="@drawable/ic_action_place"
         android:orderInCategory="100"
         app:showAsAction="always"
         />

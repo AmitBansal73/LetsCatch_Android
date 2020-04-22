@@ -154,7 +154,7 @@ public class GCMListenerService extends GcmListenerService {
             try{
                 String[] msgArray = message.split("&");
                 String msgType = msgArray[0];
-                final int ID = Integer.parseInt(msgArray[1]);
+                final int UserID = Integer.parseInt(msgArray[1]);
                 String senderMobile = msgArray[2];
                 String senderName = msgArray[3];
                 String DataReceived = msgArray[4];
@@ -171,7 +171,7 @@ public class GCMListenerService extends GcmListenerService {
                             senderName = cont.userName;
                             contImage = cont.strImage;
                         }
-                        da.InsertMeeting(senderMobile, senderName, APP_CONST.MEETING_STATUS_RECEIVING_LOCATION, DataReceived);
+                        da.InsertMeeting(senderMobile,UserID, senderName, APP_CONST.MEETING_STATUS_RECEIVING_LOCATION, DataReceived);
                         da.close();
                         MessageText = "Invite from " + senderName + "(" + senderMobile + ")";
 

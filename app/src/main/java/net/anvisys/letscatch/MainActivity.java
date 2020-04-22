@@ -38,6 +38,7 @@ import com.android.volley.RetryPolicy;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.JsonObjectRequest;
 import com.android.volley.toolbox.Volley;
+import com.squareup.picasso.Picasso;
 
 
 import net.anvisys.letscatch.Application.AboutActivity;
@@ -104,6 +105,8 @@ public class MainActivity extends AppCompatActivity implements
     public static Fragment CurrentFragment;
     private String CurrentPage="";
 
+    Profile myProfile;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         try {
@@ -130,6 +133,8 @@ public class MainActivity extends AppCompatActivity implements
             MyName = (TextView) header.findViewById(R.id.username);
             MyEmail = (TextView) header.findViewById(R.id.email);
 
+            myProfile = Session.GetUser(getApplicationContext());
+
             mDrawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
             mDrawerToggle = new ActionBarDrawerToggle(
                     this,
@@ -151,16 +156,21 @@ public class MainActivity extends AppCompatActivity implements
             mDrawerLayout.setDrawerListener(mDrawerToggle);
             mDrawerToggle.syncState();
             try {
-                Profile myProfile = Session.GetUser(this);
+                //Profile myProfile = Session.GetUser(this);
                 MyName.setText(myProfile.NAME);
                 MyEmail.setText(myProfile.E_MAIL);
                 APP_VARIABLES.MY_MOBILE_NUMBER = myProfile.MOB_NUMBER;
                 APP_VARIABLES.MY_NAME = myProfile.NAME;
-
-                Bitmap bmp = ImageServer.GetImageBitmap(myProfile.MOB_NUMBER, this);
+                APP_VARIABLES.MY_USER_ID = myProfile.UserID;
+               /* Bitmap bmp = ImageServer.GetImageBitmap(myProfile.MOB_NUMBER, this);
                 if (bmp != null) {
                     profileImage.setImageBitmap(bmp);
                 }
+                */
+                String url1 = APP_CONST.IMAGE_URL + myProfile.UserID +".png";
+                Picasso.with(getApplicationContext()).load(url1).error(R.drawable.user_image).into(profileImage);
+
+
             } catch (Exception ex) {
                 int a = 1;
             }
@@ -552,7 +562,7 @@ public class MainActivity extends AppCompatActivity implements
             Fragment fragment = mAdapter.getItem(0);
             MapFragment mapFragment = (MapFragment) fragment;
 
-            mapFragment.AddUserMarkup(APP_VARIABLES.MY_MOBILE_NUMBER,"ME","",APP_VARIABLES.MY_LOCATION_STRING, this);
+            mapFragment.AddUserMarkup(APP_VARIABLES.MY_MOBILE_NUMBER, myProfile.UserID ,"ME","",APP_VARIABLES.MY_LOCATION_STRING, this);
             mapFragment.SetMapBound(APP_VARIABLES.MY_LOCATION_STRING);
 
             RouteAllMeetings();
@@ -607,14 +617,14 @@ public class MainActivity extends AppCompatActivity implements
 
                         if(GetAerialDistance(PreviousLocation,APP_VARIABLES.MY_LOCATION_STRING)> APP_SETTINGS.LOCATION_UPDATE_DISTANCE_INTERVAL) {
                             meeting.sendNotification(this, APP_VARIABLES.MY_LOCATION_STRING, Message.LOCATION);
-                            InitiateRouting(meeting.DESTINATION_MOBILE_NO, meeting.DESTINATION_LATLONG);
+                            InitiateRouting(meeting.DESTINATION_MOBILE_NO,meeting.DESTINATION_USER_ID , meeting.DESTINATION_LATLONG);
                             PreviousLocation  = APP_VARIABLES.MY_LOCATION_STRING;
                         }
                     }
                     else if(meeting.MEETING_STATUS.matches(APP_CONST.MEETING_STATUS_RECEIVING_LOCATION))
                     {
                         if(GetAerialDistance(PreviousLocation,APP_VARIABLES.MY_LOCATION_STRING)> APP_SETTINGS.LOCATION_UPDATE_DISTANCE_INTERVAL) {
-                            InitiateRouting(meeting.DESTINATION_MOBILE_NO, meeting.DESTINATION_LATLONG);
+                            InitiateRouting(meeting.DESTINATION_MOBILE_NO,meeting.DESTINATION_USER_ID, meeting.DESTINATION_LATLONG);
                             PreviousLocation  = APP_VARIABLES.MY_LOCATION_STRING;
                         }
                     }
@@ -857,6 +867,7 @@ public class MainActivity extends AppCompatActivity implements
         try {
             String[] msgArray = message.split("&");
             String msgType = msgArray[0];
+            final int senderID = Integer.parseInt(msgArray[1]);
             final String senderMobile = msgArray[2];
             final String senderName = msgArray[3];
             final String  DataReceived = msgArray[4];
@@ -875,7 +886,7 @@ public class MainActivity extends AppCompatActivity implements
                         }
                     }
                     else {
-                        ActiveMeeting tempMeeting = new ActiveMeeting(APP_CONST.MEETING_TYPE_INSTANT,"I Am", APP_VARIABLES.MY_MOBILE_NUMBER , APP_VARIABLES.MY_LOCATION_STRING,senderMobile,senderName, DataReceived, UTILITY.CurrentLocalDateTimeString());
+                        ActiveMeeting tempMeeting = new ActiveMeeting(APP_CONST.MEETING_TYPE_INSTANT,"I Am", APP_VARIABLES.MY_MOBILE_NUMBER, APP_VARIABLES.MY_LOCATION_STRING,senderMobile, senderID ,senderName, DataReceived, UTILITY.CurrentLocalDateTimeString());
                         tempMeeting.MEETING_STATUS =APP_CONST.MEETING_STATUS_RECEIVING_LOCATION;
                         RefreshContactFragment();
 
@@ -888,7 +899,7 @@ public class MainActivity extends AppCompatActivity implements
                     }
                     da.UpdateAllActiveMeetings();
                     da.close();
-                    InitiateRouting(senderMobile, DataReceived);
+                    InitiateRouting(senderMobile,senderID, DataReceived);
                     break;
                 }
                 case Message.LOCATION: {
@@ -896,17 +907,18 @@ public class MainActivity extends AppCompatActivity implements
                     if(!meetingGroup.RunningMeetings.containsKey(senderMobile))
                     {
                        // InviteReceived(Name, Mobile, strYourLocation);
-                        ActiveMeeting tempMeeting = new ActiveMeeting(APP_CONST.MEETING_TYPE_INSTANT,"I Am", APP_VARIABLES.MY_MOBILE_NUMBER , APP_VARIABLES.MY_LOCATION_STRING,senderMobile,senderName, DataReceived, UTILITY.CurrentLocalDateTimeString());
+                        ActiveMeeting tempMeeting = new ActiveMeeting(APP_CONST.MEETING_TYPE_INSTANT,"I Am", APP_VARIABLES.MY_MOBILE_NUMBER , APP_VARIABLES.MY_LOCATION_STRING,senderMobile,senderID,senderName,
+                                DataReceived, UTILITY.CurrentLocalDateTimeString());
                         tempMeeting.MEETING_STATUS =APP_CONST.MEETING_STATUS_RECEIVING_LOCATION;
                         DataAccess da = new DataAccess(getApplicationContext());
                         da.open();
                         Contact cont =da.getContactByMobile(senderMobile);
                         da.close();
                         if(cont!=null) {
-                            ImageServer.SaveBitmapImage(ImageServer.getBitmapFromString(cont.strImage, getApplicationContext()), cont.MobileNumber, getApplicationContext());
+                           // ImageServer.SaveBitmapImage(ImageServer.getBitmapFromString(cont.strImage, getApplicationContext()), cont.MobileNumber, getApplicationContext());
                         }
                         ActiveMeetingGroup.GetInstance(getApplicationContext()).RunningMeetings.put(senderMobile, tempMeeting);
-                        InitiateRouting(senderMobile, DataReceived);
+                        InitiateRouting(senderMobile,senderID, DataReceived);
                      }
 
                     else
@@ -918,7 +930,7 @@ public class MainActivity extends AppCompatActivity implements
                             meeting.MEETING_STATUS = APP_CONST.MEETING_STATUS_SHARING_LOCATION;
                         }
 
-                        InitiateRouting(senderMobile, DataReceived);
+                        InitiateRouting(senderMobile,senderID, DataReceived);
                     }
 
                     break;
@@ -1158,14 +1170,14 @@ public class MainActivity extends AppCompatActivity implements
 
     }
 
-public void InitiateRouting(String Mobile, String Location)
+public void InitiateRouting(String Mobile, int UserID, String Location)
 {
     try {
         if (ActiveMeetingGroup.GetInstance(this).RunningMeetings.containsKey(Mobile)) {
             ActiveMeeting meeting = ActiveMeetingGroup.GetInstance(this).RunningMeetings.get(Mobile);
             Fragment fragment = mAdapter.getItem(0);
             MapFragment mapFragment = (MapFragment) fragment;
-            mapFragment.AddUserMarkup(Mobile, meeting.DESTINATION_NAME, "", Location, this);
+            mapFragment.AddUserMarkup(Mobile,UserID, meeting.DESTINATION_NAME, "", Location, this);
             mapFragment.SetMapBound(Location);
             // meeting.ORIGIN_LATLONG = APP_VARIABLES.MY_LOCATION_STRING;
             meeting.DESTINATION_LATLONG = Location;
@@ -1363,7 +1375,7 @@ public void InitiateRouting(String Mobile, String Location)
                         try {
                             Fragment fragment = mAdapter.getItem(0);
                             MapFragment mapFragment = (MapFragment) fragment;
-                            mapFragment.BlinkMarkup(mobile, Name, time, location, getApplicationContext());
+                         //   mapFragment.BlinkMarkup(mobile, Name, time, location, getApplicationContext());
                         } catch (Exception ex) {
                             int a = 1;
                         }
@@ -1395,7 +1407,7 @@ public void InitiateRouting(String Mobile, String Location)
 
                                 Fragment fragment = mAdapter.getItem(0);
                                 MapFragment mapFragment = (MapFragment) fragment;
-                                mapFragment.BlinkMarkup(mobile, Name, time, location, getApplicationContext());
+                               // mapFragment.BlinkMarkup(mobile, Name, time, location, getApplicationContext());
                             } catch (Exception ex) {
                                 int a = 1;
                             }

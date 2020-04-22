@@ -34,9 +34,11 @@ import com.android.volley.RetryPolicy;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.JsonObjectRequest;
 import com.android.volley.toolbox.Volley;
+import com.squareup.picasso.Picasso;
 
 import net.anvisys.letscatch.Common.DataAccess;
 import net.anvisys.letscatch.Common.ImageServer;
+import net.anvisys.letscatch.Common.Session;
 import net.anvisys.letscatch.Common.UTILITY;
 import net.anvisys.letscatch.Object.APP_CONST;
 import net.anvisys.letscatch.Object.APP_VARIABLES;
@@ -44,6 +46,7 @@ import net.anvisys.letscatch.Object.ActiveMeeting;
 import net.anvisys.letscatch.Object.ActiveMeetingGroup;
 import net.anvisys.letscatch.Object.ChatMessage;
 import net.anvisys.letscatch.Object.Message;
+import net.anvisys.letscatch.Object.Profile;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -78,6 +81,9 @@ public class ChatFragment extends Fragment implements ActiveMeeting.ChatUpdateLi
     static int  MSG_ID = 1;
     int IMAGE_SEND_REQUEST = 2;
     int REQUEST_SEND_IMAGE=2;
+    Profile myProfile;
+
+
     public ChatFragment() {
         // Required empty public constructor
     }
@@ -99,13 +105,20 @@ public class ChatFragment extends Fragment implements ActiveMeeting.ChatUpdateLi
         myMessage = (EditText)view.findViewById(R.id.myMessage);
         send = (ImageView)view.findViewById(R.id.sendImage);
 
+        myProfile = Session.GetUser(getContext());
 
         Bundle args =   getArguments();
         try {
             meeting = (ActiveMeeting) args.getParcelable("Meeting");
             meeting.newMessage=0;
+
+            /*
             Bitmap bmp = ImageServer.GetImageBitmap(meeting.DESTINATION_MOBILE_NO, getContext());
             Image.setImageBitmap(bmp);
+            */
+            String url1 = APP_CONST.IMAGE_URL + meeting.DESTINATION_USER_ID +".png";
+            Picasso.with(getContext()).load(url1).error(R.drawable.user_image).into(Image);
+
             Name = meeting.DESTINATION_NAME;
             txtName.setText(meeting.DESTINATION_NAME);
             CurrentMeetingStatus = meeting.MEETING_STATUS;
@@ -361,9 +374,17 @@ UTILITY.HandleException(getContext(),"OnTextSent", ex.toString());
                     {
                         incomingImage.setVisibility(View.VISIBLE);
                         inMessage.setVisibility(View.GONE);
+
+                       /*
                         Bitmap bmp = ImageServer.GetImageBitmap(chat.ImageName, getContext());
                         incomingImage.setImageBitmap(bmp);
                         incomingImage.setScaleType(ImageView.ScaleType.CENTER_INSIDE);
+                        */
+
+                        String url1 = APP_CONST.IMAGE_URL + myProfile.UserID +".png";
+                        Picasso.with(getContext()).load(url1).error(R.drawable.user_image).into(incomingImage);
+                        incomingImage.setScaleType(ImageView.ScaleType.CENTER_INSIDE);
+
                     }
                     else
                     {
@@ -435,9 +456,11 @@ UTILITY.HandleException(getContext(),"OnTextSent", ex.toString());
             else if (requestCode == IMAGE_SEND_REQUEST) {
 
                 String Name = data.getStringExtra("ImageName");
-                Bitmap bmp = ImageServer.GetImageBitmap(Name, getContext());
+                Bitmap bmp = ImageServer.GetImageBitmap1(Name, getContext());
                 int count = bmp.getByteCount();
-                        String imgString = ImageServer.getStringFromBitmap(bmp);
+                 String imgString = ImageServer.getStringFromBitmap(bmp);
+
+
                 newChat = new ChatMessage();
                 newChat.Dest_Mobile = MobileNumber;
                 newChat.Mobile = "ME";
@@ -604,9 +627,11 @@ UTILITY.HandleException(getContext(),"OnTextSent", ex.toString());
 
         try {
         int RequestID=1;
-        String reqBody = "{\"hostMobile\":\"" + APP_VARIABLES.MY_MOBILE_NUMBER + "\",\"hostName\":\"" + APP_VARIABLES.MY_NAME + "\",\"trackerID\":" + RequestID + ",\"Type\":\"" + msg + "\",\"hostLocation\":\"" + chat.Message + "\",\"inviteeMobile\":\"" + MobileNumber + "\",\"inviteeLocation\":\"" + APP_VARIABLES.MY_LOCATION_STRING + "\"}";
+        String reqBody = "{\"hostMobile\":\"" + APP_VARIABLES.MY_MOBILE_NUMBER + "\",\"hostName\":\"" + APP_VARIABLES.MY_NAME + "\",\"trackerID\":"
+                + RequestID + ",\"Type\":\"" + msg + "\",\"hostLocation\":\"" + chat.Message + "\",\"inviteeMobile\":\"" + MobileNumber
+                + "\",\"hostUserId\":" + APP_VARIABLES.MY_USER_ID + "\",\"inviteeLocation\":\"" + APP_VARIABLES.MY_LOCATION_STRING + "\"}";
 
-        String url = APP_CONST.APP_SERVER_URL + "api/Tracker";
+        String url = APP_CONST.APP_SERVER_URL + "/api/Tracker";
 
             JSONObject jsRequest = new JSONObject(reqBody);
             //-------------------------------------------------------------------------------------------------
@@ -683,7 +708,7 @@ UTILITY.HandleException(getContext(),"OnTextSent", ex.toString());
         try {
             String escapedFilepath = file.replace("\\","\\\\");
             String reqBody = "{\"FilePath\":\"" + escapedFilepath + "\"}";
-            String url = APP_CONST.APP_SERVER_URL + "api/ImageMessage";
+            String url = APP_CONST.APP_SERVER_URL + "/api/ImageMessage";
             JSONObject jsRequest = new JSONObject(reqBody);
 
         //-------------------------------------------------------------------------------------------------

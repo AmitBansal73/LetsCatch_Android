@@ -7,6 +7,7 @@ import android.content.DialogInterface;
 import android.graphics.Bitmap;
 import android.graphics.Color;
 import android.graphics.Typeface;
+import android.graphics.drawable.Drawable;
 import android.location.Location;
 import android.location.LocationListener;
 import android.os.Bundle;
@@ -16,6 +17,7 @@ import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.AlertDialog;
 import android.text.Html;
 import android.text.Spanned;
+import android.util.Log;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -50,9 +52,12 @@ import com.google.android.gms.maps.model.LatLngBounds;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.maps.model.Polyline;
+import com.squareup.picasso.Picasso;
+import com.squareup.picasso.Target;
 
 import net.anvisys.letscatch.Common.DataAccess;
 import net.anvisys.letscatch.Common.ImageServer;
+import net.anvisys.letscatch.Common.Session;
 import net.anvisys.letscatch.Common.UTILITY;
 import net.anvisys.letscatch.Object.APP_CONST;
 import net.anvisys.letscatch.Object.APP_VARIABLES;
@@ -66,6 +71,8 @@ import org.json.JSONObject;
 
 import java.util.HashMap;
 import java.util.Timer;
+
+import static com.android.volley.VolleyLog.TAG;
 
 
 /**
@@ -106,16 +113,16 @@ public class MapFragment extends Fragment implements
         myMessage = (EditText)rootView.findViewById(R.id.myMessage);
         sendButton = (ImageView)rootView.findViewById(R.id.sendImage);
         currentMeetingsMarker = new HashMap<String,Marker>();
-
+        myMessage.requestFocus();
         myMessage.setOnFocusChangeListener(new View.OnFocusChangeListener() {
             @Override
             public void onFocusChange(View view, boolean b) {
                 if (b) {
-                    getActivity().getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_NOTHING);
+                    //getActivity().getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_NOTHING);
 
-                    // InputMethodManager imm = (InputMethodManager)getActivity().getSystemService(Service.INPUT_METHOD_SERVICE);
+                    InputMethodManager imm = (InputMethodManager)getActivity().getSystemService(Service.INPUT_METHOD_SERVICE);
 
-                    //imm.showSoftInput(view,0);
+                    imm.showSoftInput(view,0);
                 } else {
                     // getActivity().getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_HIDDEN);
                     InputMethodManager imm = (InputMethodManager)getActivity().getSystemService(Service.INPUT_METHOD_SERVICE);
@@ -173,6 +180,7 @@ public class MapFragment extends Fragment implements
         {
             Toast.makeText(getContext(), "Could not create Map", Toast.LENGTH_LONG).show();
         }
+
         setHasOptionsMenu(true);
        // getActivity().invalidateOptionsMenu();
         return rootView;
@@ -212,7 +220,11 @@ public class MapFragment extends Fragment implements
                             }
                             selectedMarker.setSnippet(text);
                             selectedMarker.showInfoWindow();
+                            InputMethodManager imm = (InputMethodManager)getActivity().getSystemService(Service.INPUT_METHOD_SERVICE);
+                            imm.showSoftInput(myReply,0);
                             myReply.setVisibility(View.VISIBLE);
+                            myMessage.requestFocus();
+
                         }
                         return false;
                     }
@@ -265,7 +277,7 @@ public class MapFragment extends Fragment implements
 
                     mapCenter = new LatLng(28.6155, 77.3907);
                 }
-                AddUserMarkup(APP_VARIABLES.MY_MOBILE_NUMBER,"ME" ,"",APP_VARIABLES.MY_LOCATION_STRING,getContext());
+                AddUserMarkup(APP_VARIABLES.MY_MOBILE_NUMBER, Session.GetUser(getContext()).UserID,"ME" ,"",APP_VARIABLES.MY_LOCATION_STRING,getContext());
                 mMap.moveCamera(CameraUpdateFactory.newLatLng(mapCenter));
                 mMap.animateCamera(CameraUpdateFactory.zoomTo(15));
 
@@ -407,7 +419,7 @@ public class MapFragment extends Fragment implements
                     }
                     Polyline line = mMap.addPolyline(meeting.lineOptions);
                     currentMeetingsPolyline.put(meeting.DESTINATION_MOBILE_NO, line);
-
+                    AddUserMarkup(meeting.DESTINATION_MOBILE_NO,meeting.DESTINATION_USER_ID, meeting.DESTINATION_NAME, meeting.TIME_TO_GO, meeting.DESTINATION_LATLONG, getContext());
 
                 }
                 catch (Exception ex)
@@ -417,14 +429,18 @@ public class MapFragment extends Fragment implements
             }
 
 
-            public void AddUserMarkup(String MobileNumber,String Name, String Time ,String Location,Context context)
+            public void AddUserMarkup(final String MobileNumber, int User_ID,final String Name,final String Time ,String Location,final Context context)
             {
                 try {
                     String[] arrTargetLoc = Location.split(",");
 
-                    LatLng latLong = new LatLng(Double.parseDouble(arrTargetLoc[0]), Double.parseDouble(arrTargetLoc[1]));
-                    Bitmap bitMap= ImageServer.GetImageBitmap(MobileNumber, context);
-                    Bitmap markerImage = ImageServer.GetBitmapFromDrawable(bitMap, context);
+                  final LatLng latLong = new LatLng(Double.parseDouble(arrTargetLoc[0]), Double.parseDouble(arrTargetLoc[1]));
+                    /*  Bitmap bitMap= ImageServer.GetImageBitmap(MobileNumber, context);*/
+
+
+
+                  //  Bitmap markerImage = ImageServer.GetBitmapFromDrawable(bitMap, context);
+
                     if (currentMeetingsMarker.containsKey(MobileNumber)) {
                         Marker mar = currentMeetingsMarker.get(MobileNumber);
                         mar.setPosition(latLong);
@@ -433,12 +449,45 @@ public class MapFragment extends Fragment implements
                     }
                     else {
 
-                        Marker pMarker = mMap.addMarker(new MarkerOptions()
-                                .position(latLong)
-                                .icon(BitmapDescriptorFactory.fromBitmap(markerImage))
-                                .snippet(Time));
-                        pMarker.setTitle(Name);
-                        currentMeetingsMarker.put(MobileNumber, pMarker);
+                        String url1 = APP_CONST.IMAGE_URL + User_ID +".png";
+
+                        Target target = new Target() {
+                            @Override
+                            public void onBitmapLoaded(Bitmap bitmap, Picasso.LoadedFrom from) {
+
+                                Bitmap markerImage = ImageServer.GetBitmapFromDrawable(bitmap, context);
+
+                                Marker pMarker = mMap.addMarker(new MarkerOptions()
+                                        .position(latLong)
+                                        .icon(BitmapDescriptorFactory.fromBitmap(markerImage))
+                                        .snippet(Time));
+                                pMarker.setTitle(Name);
+                                currentMeetingsMarker.put(MobileNumber, pMarker);
+                            }
+
+                            @Override
+                            public void onBitmapFailed(Drawable errorDrawable) {
+                                Bitmap bmp = ImageServer.GetDefaultImage(context);
+                                Bitmap markerImage = ImageServer.GetBitmapFromDrawable(bmp, context);
+                                Marker pMarker = mMap.addMarker(new MarkerOptions()
+                                        .position(latLong)
+                                        .icon(BitmapDescriptorFactory.fromBitmap(markerImage))
+                                        .snippet(Time));
+                                pMarker.setTitle(Name);
+                                currentMeetingsMarker.put(MobileNumber, pMarker);
+                            }
+
+                            @Override
+                            public void onPrepareLoad(Drawable placeHolderDrawable) {
+                            }
+                        };
+
+                        Picasso.with(getContext()).load(url1)
+                                .error(R.drawable.user_image)
+                                .resize(100,100)
+                                .into(target);
+
+
                     }
                }
                 catch (Exception ex)
@@ -448,7 +497,10 @@ public class MapFragment extends Fragment implements
 
             }
 
-          public void BlinkMarkup(String MobileNumber,String Name, String Time ,String Location,Context context)
+
+
+
+          public void BlinkMarkup(String MobileNumber, int User_ID,String Name, String Time ,String Location,Context context)
           {
               Marker mar;
               try {
@@ -465,8 +517,14 @@ public class MapFragment extends Fragment implements
                           mar.setPosition(latLong);
 
                       } else {
-                          Bitmap bitMap = ImageServer.GetImageBitmap(MobileNumber, context);
+                         // Bitmap bitMap = ImageServer.GetImageBitmap(MobileNumber, context);
+
+                          String url1 = APP_CONST.IMAGE_URL + User_ID +".png";
+                          Bitmap bitMap = Picasso.with(getContext()).load(url1).get();
+
                           Bitmap markerImage = ImageServer.GetBitmapFromDrawable(bitMap, context);
+
+
                           mar = mMap.addMarker(new MarkerOptions()
                                   .position(latLong)
                                   .icon(BitmapDescriptorFactory.fromBitmap(markerImage))
@@ -791,9 +849,11 @@ public class MapFragment extends Fragment implements
 
 
               int RequestID=1;
-              String reqBody = "{\"hostMobile\":\"" + APP_VARIABLES.MY_MOBILE_NUMBER + "\",\"hostName\":\"" + APP_VARIABLES.MY_NAME + "\",\"trackerID\":" + RequestID + ",\"Type\":\"" + msg + "\",\"hostLocation\":\"" + chat.Message + "\",\"inviteeMobile\":\"" + chat.Dest_Mobile + "\",\"inviteeLocation\":\"" + chat.Message + "\"}";
+              String reqBody = "{\"hostMobile\":\"" + APP_VARIABLES.MY_MOBILE_NUMBER + "\",\"hostName\":\"" + APP_VARIABLES.MY_NAME + "\",\"trackerID\":"
+                      + RequestID + ",\"Type\":\"" + msg + "\",\"hostLocation\":\"" + chat.Message + "\",\"inviteeMobile\":\"" + chat.Dest_Mobile
+                      + "\",\"hostUserId\":" + APP_VARIABLES.MY_USER_ID + "\",\"inviteeLocation\":\"" + chat.Message + "\"}";
 
-              String url = APP_CONST.APP_SERVER_URL + "api/Tracker";
+              String url = APP_CONST.APP_SERVER_URL + "/api/Tracker";
 
               try {
                   JSONObject jsRequest = new JSONObject(reqBody);

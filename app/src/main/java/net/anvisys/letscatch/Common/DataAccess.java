@@ -39,7 +39,7 @@ public class DataAccess {
     private static final String ACTIVE_MEETING_TABLE_NAME = "active_meeting";
     private static final String MESSAGE_TABLE_NAME = "message_master";
 
-    private static final int DATABASE_VERSION = 1;
+    private static final int DATABASE_VERSION = 2;
 
 
 
@@ -67,7 +67,7 @@ public class DataAccess {
     private static final String TABLE_CREATE_ACTIVE_MEETING = "CREATE TABLE IF NOT EXISTS "
             + ACTIVE_MEETING_TABLE_NAME
             + "(ID INTEGER PRIMARY KEY AUTOINCREMENT,"
-            + "mobile_no VARCHAR(20), status VARCHAR(10), location VARCHAR(20),"
+            + "mobile_no VARCHAR(20), user_id INTEGER , status VARCHAR(10), location VARCHAR(20),"
             + "name VARCHAR(20), time datetime(20));";
 
     private static final String TABLE_CREATE_MESSAGE = "CREATE TABLE IF NOT EXISTS "
@@ -99,6 +99,7 @@ public class DataAccess {
         @Override
         public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
             db.execSQL("DROP TABLE IF EXISTS " + MESSAGE_TABLE_NAME);
+            db.execSQL("DROP TABLE IF EXISTS " + ACTIVE_MEETING_TABLE_NAME);
             onCreate(db);
         }
     }
@@ -603,6 +604,7 @@ public class DataAccess {
                         ) {
                     ContentValues initialValues = new ContentValues();
                     initialValues.put("mobile_no", meeting.DESTINATION_MOBILE_NO);
+                    initialValues.put("user_id", meeting.DESTINATION_USER_ID);
                     initialValues.put("name", meeting.DESTINATION_NAME);
                     initialValues.put("status", meeting.MEETING_STATUS);
                     initialValues.put("time", meeting.START_TIME);
@@ -630,6 +632,7 @@ public class DataAccess {
         if (cur.moveToFirst()) {
             do {
                 String Mobile = (cur.getString(cur.getColumnIndex("mobile_no")));
+                int UserId = (cur.getInt(cur.getColumnIndex("user_id")));
                 String Name = (cur.getString(cur.getColumnIndex("name")));
                 String Status = (cur.getString(cur.getColumnIndex("status")));
                 String StartTime = (cur.getString(cur.getColumnIndex("time")));
@@ -643,7 +646,7 @@ public class DataAccess {
                 }
                 else
                 {
-                    ActiveMeeting tempMeeting = new ActiveMeeting(Mobile,Name,Status,location,StartTime);
+                    ActiveMeeting tempMeeting = new ActiveMeeting(Mobile,UserId ,Name,Status,location,StartTime);
                     meetingList.put(Mobile, tempMeeting);
                 }
 
@@ -653,10 +656,11 @@ public class DataAccess {
 
     }
 
-    public  void InsertMeeting(String Mobile, String Name, String Status, String TargetLocation)
+    public  void InsertMeeting(String Mobile, int UserId, String Name, String Status, String TargetLocation)
     {
         ContentValues initialValues = new ContentValues();
         initialValues.put("mobile_no", Mobile);
+        initialValues.put("user_id", UserId);
         initialValues.put("name", Name);
         initialValues.put("status", Status);
         initialValues.put("location", TargetLocation);

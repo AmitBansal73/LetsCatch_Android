@@ -311,7 +311,7 @@ public class ContactSyncService extends IntentService{
 
     public void SyncServerContact()
     {
-        String url = APP_CONST.APP_SERVER_URL + "api/Contact";
+        String url = APP_CONST.APP_SERVER_URL + "/api/Contact";
        // RequestQueue queue = Volley.newRequestQueue(mContext);
         RequestQueue  queue = Volley.newRequestQueue(mContext);
         String reqBody = "{\"DateTime\":\""+Session.GetServerContactSyncUTCDateTime(mContext)+"\"}";

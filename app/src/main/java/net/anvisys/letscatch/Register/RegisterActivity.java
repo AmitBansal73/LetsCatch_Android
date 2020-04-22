@@ -27,6 +27,7 @@ import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.GoogleApiAvailability;
 import com.google.android.gms.gcm.GoogleCloudMessaging;
 import com.google.android.gms.iid.InstanceID;
+import com.squareup.picasso.Picasso;
 
 import net.anvisys.letscatch.Common.ImageServer;
 import net.anvisys.letscatch.Common.Session;
@@ -80,12 +81,21 @@ public class RegisterActivity extends AppCompatActivity {
 
         Intent mIntent = getIntent();
         MobileNumber = mIntent.getStringExtra("Mobile");
+
         Mobile.setText(MobileNumber);
-        Bitmap myImage = ImageServer.GetImageBitmap(MobileNumber, this);
-        if (myImage != null)
+        try {
+           /* Bitmap myImage = ImageServer.GetImageBitmap(MobileNumber, this);
+            if (myImage != null) {
+                profileImage.setImageBitmap(myImage);
+                strImage = ImageServer.getStringFromBitmap(myImage);
+            }*/
+
+          /*  String url1 = APP_CONST.IMAGE_URL + UserID +".png";
+            Picasso.with(getApplicationContext()).load(url1).error(R.drawable.user_image).into(profileImage);*/
+        }
+        catch (Exception ex)
         {
-            profileImage.setImageBitmap(myImage);
-            strImage = ImageServer.getStringFromBitmap(myImage);
+            Toast.makeText(getApplicationContext(), "Error Reading Image",Toast.LENGTH_LONG).show();
         }
     }
 
@@ -285,24 +295,43 @@ public class RegisterActivity extends AppCompatActivity {
             JsonObjectRequest jsArrayRequest = new JsonObjectRequest(Request.Method.POST, url,jsRequest, new Response.Listener<JSONObject>() {
                 @Override
                 public void onResponse(JSONObject jObj) {
-
-                    Toast.makeText(getApplicationContext(), "Registered Successfully.",
-                            Toast.LENGTH_SHORT).show();
                     prgBar.setVisibility(View.GONE);
-
                     Profile myProfile = new Profile();
-                    myProfile.NAME = profileName;
-                    myProfile.strImage = strImage;
-                    myProfile.MOB_NUMBER = MobileNumber;
-                    myProfile.LOCATION = profileLocation;
-                    myProfile.E_MAIL = email;
-                    myProfile.REG_ID = GCMCode;
-                    Session.AddUser(getApplicationContext(), myProfile);
-                    //   ImageSaver.SaveImageByte(ImageSaver.getByteFromString( myProfile.strImage),MobileNumber,getApplicationContext());
-                    Intent mainIntent = new Intent(RegisterActivity.this,StartActivity.class);
-                    mainIntent.putExtra("parent","Register");
-                    mainIntent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_NEW_TASK);
-                    startActivity(mainIntent);
+                    try {
+                        String response = jObj.getString("Response");
+                        if(response.matches("OK")) {
+                            Toast.makeText(getApplicationContext(), "Registered Successfully.",
+                                    Toast.LENGTH_SHORT).show();
+                            myProfile.UserID = Integer.parseInt(jObj.getString("UserID"));
+
+                            myProfile.NAME = profileName;
+                            myProfile.strImage = strImage;
+                            myProfile.MOB_NUMBER = MobileNumber;
+                            myProfile.LOCATION = profileLocation;
+                            myProfile.E_MAIL = email;
+                            myProfile.REG_ID = GCMCode;
+                            Session.AddUser(getApplicationContext(), myProfile);
+                            //   ImageSaver.SaveImageByte(ImageSaver.getByteFromString( myProfile.strImage),MobileNumber,getApplicationContext());
+                            Intent mainIntent = new Intent(RegisterActivity.this,StartActivity.class);
+                            mainIntent.putExtra("parent","Register");
+                            mainIntent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_NEW_TASK);
+                            startActivity(mainIntent);
+                        }
+                        else{
+                            Toast.makeText(getApplicationContext(), "Failed to Register.",
+                                    Toast.LENGTH_SHORT).show();
+                            return;
+                        }
+
+                    }
+                    catch (JSONException jex)
+                    {
+                        Toast.makeText(getApplicationContext(), "Error Reading response.",
+                                Toast.LENGTH_SHORT).show();
+                        return;
+                    }
+
+
                    // RegisterActivity.this.finish();
 
 

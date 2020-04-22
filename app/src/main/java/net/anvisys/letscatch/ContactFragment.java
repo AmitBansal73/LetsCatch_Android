@@ -26,6 +26,8 @@ import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.squareup.picasso.Picasso;
+
 import net.anvisys.letscatch.Common.DataAccess;
 import net.anvisys.letscatch.Common.ImageServer;
 import net.anvisys.letscatch.Object.APP_CONST;
@@ -289,10 +291,15 @@ public class ContactFragment extends Fragment {
                 txtName.setText(cont.userName);
                 txtMobile.setText(cont.MobileNumber);
                 txtLocation.setText(cont.location);
-                if(!cont.strImage.matches("")) {
+
+              /*  if(!cont.strImage.matches("")) {
                     Bitmap bitmap = ImageServer.getBitmapFromString(cont.strImage,getContext());
                     img.setImageBitmap(bitmap);
                 }
+                */
+
+                String url1 = APP_CONST.IMAGE_URL + cont.ID +".png";
+                Picasso.with(getContext()).load(url1).error(R.drawable.user_image).into(img);
 
             }
             catch (Exception ex)

@@ -72,7 +72,7 @@ public class StartActivity extends AppCompatActivity {
             }
         });
         setContentView(R.layout.activity_start);
-        checkPermission();
+        checkNetworkPermission();
 
     }
 
@@ -433,7 +433,7 @@ public class StartActivity extends AppCompatActivity {
         }
     }
 
-    private void checkPermission()
+    private void checkNetworkPermission()
     {
         if ((ContextCompat.checkSelfPermission(StartActivity.this, Manifest.permission.ACCESS_WIFI_STATE)
                 != PackageManager.PERMISSION_GRANTED)

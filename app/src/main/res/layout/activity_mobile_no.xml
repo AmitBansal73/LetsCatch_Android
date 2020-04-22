@@ -83,14 +83,14 @@
         </android.support.design.widget.TextInputLayout>
         </LinearLayout>
         <Button
-            android:id="@+id/btnAction"
+            android:id="@+id/btnNext"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:text="Next"
             android:textColor="#fff"
             android:background="@drawable/background_btn"
             android:layout_marginTop="15dp"
-            android:onClick="btnClick"
+
             />
     </LinearLayout>
     </LinearLayout>

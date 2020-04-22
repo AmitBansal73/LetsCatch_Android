@@ -4,6 +4,7 @@ package net.anvisys.letscatch.Object;
  * Created by Amit Bansal on 10-02-2017.
  */
 public class Profile {
+    public int UserID=0;
     public String REG_ID="";
     public String NAME="";
     public String MOB_NUMBER="";

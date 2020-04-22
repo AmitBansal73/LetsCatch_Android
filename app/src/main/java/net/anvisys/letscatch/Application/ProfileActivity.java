@@ -4,6 +4,10 @@ import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.net.Uri;
+import android.os.Build;
+import android.os.Environment;
+import android.provider.MediaStore;
+import android.support.v4.content.FileProvider;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.View;
@@ -21,6 +25,9 @@ import com.android.volley.RetryPolicy;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.JsonObjectRequest;
 import com.android.volley.toolbox.Volley;
+import com.squareup.picasso.MemoryPolicy;
+import com.squareup.picasso.NetworkPolicy;
+import com.squareup.picasso.Picasso;
 
 import net.anvisys.letscatch.Object.APP_CONST;
 import net.anvisys.letscatch.Common.ImageServer;
@@ -32,8 +39,15 @@ import net.anvisys.letscatch.R;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
+import java.io.File;
 import java.io.InputStream;
+import java.text.Format;
+
 import net.anvisys.letscatch.Shape.OvalImageView;
+
+import static android.os.Build.VERSION_CODES.M;
 
 
 public class ProfileActivity extends AppCompatActivity {
@@ -95,14 +109,17 @@ public class ProfileActivity extends AppCompatActivity {
         btnImageUpload = (Button)findViewById(R.id.btnImageUpdate);
         myProfile = Session.GetUser(this);
 
-        Bitmap bmp = ImageServer.GetImageBitmap(myProfile.MOB_NUMBER, this);
+        String url1 = APP_CONST.APP_SERVER_URL + "/Image/User/" + myProfile.UserID +".png";
+        Picasso.with(getApplicationContext()).load(url1).error(R.drawable.user_image).into(profileImage);
+
+       /* Bitmap bmp = ImageServer.GetImageBitmap(myProfile.MOB_NUMBER, this);
         if (bmp == null)
         {
             ImageServer.SaveImageString(myProfile.strImage,myProfile.MOB_NUMBER,this);
             bmp = ImageServer.GetImageBitmap(myProfile.MOB_NUMBER, this);
         }
 
-        profileImage.setImageBitmap(bmp);
+        profileImage.setImageBitmap(bmp);*/
 
         MobileNumber = myProfile.MOB_NUMBER;
         Mobile.setText(MobileNumber);
@@ -398,7 +415,20 @@ public class ProfileActivity extends AppCompatActivity {
 
                 if (data != null) {
                     Uri uri = data.getData();
-                    ImageCropFunction(uri);
+
+                    InputStream image_stream = getContentResolver().openInputStream(uri);
+                    byte[] imgByte= ImageServer.getBytes(image_stream);
+
+                    // This can be used in case of crop function not working
+                    newBitmap = MediaStore.Images.Media.getBitmap(this.getContentResolver(), uri);
+
+                    ImageServer.SaveFileToExternal(imgByte,"crop.jpg",getApplicationContext());
+                    File root = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES);
+                    File myDir = new File(root  + "/Catch/crop.jpg");
+                    myDir.mkdirs();
+                    Uri contentUri = Uri.fromFile(myDir);
+
+                    ImageCropFunction(myDir);
                 }
             } else if (requestCode == REQUEST_IMAGE_CROP) {
 
@@ -434,7 +464,8 @@ public class ProfileActivity extends AppCompatActivity {
 
         prgBar.setVisibility(View.VISIBLE);
         String url = APP_CONST.APP_SERVER_URL+ "/api/Image";
-        String reqBody = "{\"MobileNumber\":\""+ MobileNumber + "\",\"userName\":\""+ profileName + "\",\"Email\":\""+ email + "\",\"Location\":\""+ profileLocation + "\",\"ImageString\":\""+ strImage + "\"}";
+        String reqBody = "{\"MobileNumber\":\""+ MobileNumber + "\",\"userName\":\""+ profileName + "\",\"Email\":\""+ email + "\",\"Location\":\""
+                + profileLocation + "\",\"ImageString\":\""+ strImage + "\"}";
         try {
             JSONObject jsRequest = new JSONObject(reqBody);
             //-------------------------------------------------------------------------------------------------
@@ -449,6 +480,11 @@ public class ProfileActivity extends AppCompatActivity {
                         if(Response.matches("OK"))
                         {
                             ImageServer.SaveBitmapImage(newBitmap,MobileNumber,getApplicationContext());
+
+                            String url1 = APP_CONST.IMAGE_URL  + myProfile.UserID +".png";
+                            Picasso.with(getApplicationContext()).load(url1).error(R.drawable.user_image)
+                                    .memoryPolicy(MemoryPolicy.NO_CACHE)
+                                     .into(profileImage);
 
                         }
                         else if(Response.matches("Fail"))
@@ -512,13 +548,38 @@ public class ProfileActivity extends AppCompatActivity {
         }
     }
 
-    public void ImageCropFunction(Uri uri) {
+    public void ImageCropFunction(File file) {
 
         // Image Crop Code
         try {
-            Intent CropIntent = new Intent("com.android.camera.action.CROP");
+            Uri contentUri;
 
-            CropIntent.setDataAndType(uri, "image/*");
+            Intent CropIntent = new Intent("com.android.camera.action.CROP");
+            if(Build.VERSION.SDK_INT > M){
+
+                contentUri = FileProvider.getUriForFile(getApplicationContext(),
+                        "android3.maxtingapp.provider",
+                        file);//package.provider
+
+                //TODO:  Permission..
+
+                getApplicationContext().grantUriPermission("com.android.camera",
+                        contentUri,
+                        Intent.FLAG_GRANT_WRITE_URI_PERMISSION | Intent.FLAG_GRANT_READ_URI_PERMISSION);
+
+                CropIntent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
+                CropIntent.addFlags(Intent.FLAG_GRANT_WRITE_URI_PERMISSION);
+
+            }
+            else
+            {
+                contentUri = Uri.fromFile(file);
+            }
+
+
+
+
+            CropIntent.setDataAndType(contentUri, "image/*");
 
             CropIntent.putExtra("crop", "true");
             CropIntent.putExtra("outputX", 100);
@@ -531,7 +592,14 @@ public class ProfileActivity extends AppCompatActivity {
             startActivityForResult(CropIntent, REQUEST_IMAGE_CROP);
 
         } catch (Exception e) {
+            Toast.makeText(getApplicationContext(),"Could not crop",Toast.LENGTH_LONG).show();
+            ByteArrayOutputStream out = new ByteArrayOutputStream();
+            newBitmap.compress(Bitmap.CompressFormat.PNG, 100, out);
+            Bitmap decoded = BitmapFactory.decodeStream(new ByteArrayInputStream(out.toByteArray()));
 
+            profileImage.setImageBitmap(newBitmap);
+            strImage = ImageServer.getStringFromBitmap(decoded);
+            btnImageUpload.setVisibility(View.VISIBLE);
         }
     }
 

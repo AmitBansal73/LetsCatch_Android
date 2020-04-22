@@ -24,8 +24,11 @@ import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.squareup.picasso.Picasso;
+
 import net.anvisys.letscatch.Common.ImageServer;
 import net.anvisys.letscatch.Common.UTILITY;
+import net.anvisys.letscatch.Object.APP_CONST;
 import net.anvisys.letscatch.Object.APP_VARIABLES;
 import net.anvisys.letscatch.Object.ActiveMeeting;
 import net.anvisys.letscatch.Object.ActiveMeetingGroup;
@@ -178,10 +181,14 @@ public class ActiveFragment extends Fragment {
                 ActiveMeeting meeting = (ActiveMeeting) ActiveMeetingGroup.GetInstance(getContext()).RunningMeetings.values().toArray()[position];
 
                 listHolder = (ActiveListHolder) convertView.getTag();
-                Bitmap bmp = ImageServer.GetImageBitmap(meeting.DESTINATION_MOBILE_NO, getContext());
+              /*  Bitmap bmp = ImageServer.GetImageBitmap(meeting.DESTINATION_MOBILE_NO, getContext());
                 if(bmp!=null) {
                     listHolder.Image.setImageBitmap(bmp);
                 }
+                */
+
+                String url1 = APP_CONST.IMAGE_URL + meeting.DESTINATION_USER_ID +".png";
+                Picasso.with(getContext()).load(url1).error(R.drawable.user_image).into(listHolder.Image);
 
                 listHolder.imageChecked.setVisibility(View.INVISIBLE);
                 listHolder.txtName.setText(meeting.DESTINATION_NAME);
